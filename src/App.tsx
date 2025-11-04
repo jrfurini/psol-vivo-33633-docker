@@ -10,7 +10,6 @@ import Controle from "./pages/Controle";
 import MascaraFornecedor from "./pages/MascaraFornecedor";
 import Rateio from "./pages/Rateio";
 import ResumoFinanceiro from "./pages/ResumoFinanceiro";
-import AnaliseFinanceira from "./pages/AnaliseFinanceira";
 import Contatos from "./pages/Contatos";
 import Administracao from "./pages/Administracao";
 import NotFound from "./pages/NotFound";
@@ -31,7 +30,6 @@ const App = () => (
               <Route path="/mascara-fornecedor" element={<MascaraFornecedor />} />
               <Route path="/rateio" element={<Rateio />} />
               <Route path="/resumo-financeiro" element={<ResumoFinanceiro />} />
-              <Route path="/analise-financeira" element={<AnaliseFinanceira />} />
               <Route path="/contatos" element={<Contatos />} />
               <Route path="/administracao" element={<Administracao />} />
             </Route>

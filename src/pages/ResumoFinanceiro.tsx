@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
 import { formatCurrency } from '@/lib/formatters';
+import { generateProposalPDF } from '@/lib/pdfGenerator';
 import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
+import { Download, FileText } from 'lucide-react';
 
 // Tabela de coeficientes baseada no PRV
 const COEFICIENTES: Record<number, number> = {
@@ -18,7 +22,7 @@ const COEFICIENTES: Record<number, number> = {
 
 export default function ResumoFinanceiro() {
   const navigate = useNavigate();
-  const { selectedQuote, quoteProducts, rateioServices, quoteConfigs, adminSettings } = useApp();
+  const { selectedQuote, quoteProducts, rateioServices, quoteConfigs, adminSettings, clientContacts, clients } = useApp();
 
   const [receitaBruta, setReceitaBruta] = useState(0);
   const [impostos, setImpostos] = useState(0);
@@ -126,6 +130,80 @@ export default function ResumoFinanceiro() {
   if (!selectedQuote) {
     return null;
   }
+
+  const client = clients.find(c => c.id === selectedQuote.clientId);
+
+  const handleDownloadExcel = async () => {
+    try {
+      // Carregar o template ou arquivo da administração
+      let arrayBuffer: ArrayBuffer;
+      if (adminSettings.cashFlowFile?.fileData) {
+        arrayBuffer = adminSettings.cashFlowFile.fileData;
+      } else {
+        const response = await fetch('/Template_FluxoCaixa.xlsx');
+        arrayBuffer = await response.arrayBuffer();
+      }
+
+      const wb = XLSX.read(arrayBuffer, { type: 'array' });
+
+      // Atualizar células na aba "FC"
+      if (wb.SheetNames.includes('FC')) {
+        const wsFC = wb.Sheets['FC'];
+        
+        const config = quoteConfigs[selectedQuote.id];
+        const prv = config?.prv || 30;
+
+        const fcUpdates = {
+          'B13': receitaBruta,
+          'B14': prv,
+          'B15': custoProduto,
+          'B16': rateio,
+          'B18': impostos,
+        };
+
+        Object.entries(fcUpdates).forEach(([cellRef, value]) => {
+          if (!wsFC[cellRef]) {
+            wsFC[cellRef] = { t: 'n', v: value };
+          } else {
+            wsFC[cellRef].v = value;
+            wsFC[cellRef].t = 'n';
+          }
+        });
+      }
+
+      // Download
+      XLSX.writeFile(wb, `Fluxo de caixa-${selectedQuote.codigo}.xlsx`);
+      toast.success('Excel gerado com sucesso');
+    } catch (error) {
+      console.error('Erro ao gerar Excel:', error);
+      toast.error('Erro ao gerar Excel');
+    }
+  };
+
+  const handleViewProposal = () => {
+    const products = quoteProducts[selectedQuote.id] || [];
+    const contacts = clientContacts[selectedQuote.id];
+    
+    if (products.length === 0) {
+      toast.error('Adicione produtos antes de gerar a proposta');
+      return;
+    }
+
+    if (!client) {
+      toast.error('Cliente não encontrado');
+      return;
+    }
+
+    generateProposalPDF(
+      selectedQuote.codigo,
+      client.razaoSocial,
+      client.cnpj,
+      products,
+      contacts
+    );
+    
+    toast.success('Proposta gerada com sucesso');
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -301,6 +379,18 @@ export default function ResumoFinanceiro() {
           </div>
         </div>
       </Card>
+
+      {/* Botões de Ação */}
+      <div className="flex gap-4">
+        <Button onClick={handleDownloadExcel} className="flex-1">
+          <Download className="mr-2 h-4 w-4" />
+          Baixar Fluxo de Caixa
+        </Button>
+        <Button onClick={handleViewProposal} className="flex-1">
+          <FileText className="mr-2 h-4 w-4" />
+          Visualizar Proposta
+        </Button>
+      </div>
     </div>
   );
 }
