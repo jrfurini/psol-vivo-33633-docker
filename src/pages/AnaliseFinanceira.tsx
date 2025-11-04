@@ -249,11 +249,9 @@ const AnaliseFinanceira = () => {
                 <Label htmlFor="receitasBrutas">Receita Bruta</Label>
                 <Input
                   id="receitasBrutas"
-                  type="number"
-                  step="0.01"
-                  value={inputs.receitasBrutas || ''}
-                  onChange={(e) => handleInputChange('receitasBrutas', e.target.value)}
-                  placeholder="0.00"
+                  type="text"
+                  value={formatCurrency(inputs.receitasBrutas)}
+                  placeholder="R$ 0,00"
                   className="bg-muted"
                   readOnly
                 />
@@ -277,11 +275,9 @@ const AnaliseFinanceira = () => {
                 <Label htmlFor="custoProduto">Custo do produto</Label>
                 <Input
                   id="custoProduto"
-                  type="number"
-                  step="0.01"
-                  value={inputs.custoProduto || ''}
-                  onChange={(e) => handleInputChange('custoProduto', e.target.value)}
-                  placeholder="0.00"
+                  type="text"
+                  value={formatCurrency(inputs.custoProduto)}
+                  placeholder="R$ 0,00"
                   className="bg-muted"
                   readOnly
                 />
@@ -291,11 +287,9 @@ const AnaliseFinanceira = () => {
                 <Label htmlFor="rateio">Rateio</Label>
                 <Input
                   id="rateio"
-                  type="number"
-                  step="0.01"
-                  value={inputs.rateio || ''}
-                  onChange={(e) => handleInputChange('rateio', e.target.value)}
-                  placeholder="0.00"
+                  type="text"
+                  value={formatCurrency(inputs.rateio)}
+                  placeholder="R$ 0,00"
                   className="bg-muted"
                   readOnly
                 />
@@ -305,11 +299,9 @@ const AnaliseFinanceira = () => {
                 <Label htmlFor="imposto">Imposto</Label>
                 <Input
                   id="imposto"
-                  type="number"
-                  step="0.01"
-                  value={inputs.imposto || ''}
-                  onChange={(e) => handleInputChange('imposto', e.target.value)}
-                  placeholder="0.00"
+                  type="text"
+                  value={formatCurrency(inputs.imposto)}
+                  placeholder="R$ 0,00"
                   className="bg-muted"
                   readOnly
                 />
