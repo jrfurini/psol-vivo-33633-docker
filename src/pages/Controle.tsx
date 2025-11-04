@@ -5,6 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useApp } from '@/contexts/AppContext';
 import { formatCurrency } from '@/lib/formatters';
 import { fetchDolarPtax } from '@/lib/bcbApi';
@@ -24,6 +33,7 @@ export default function Controle() {
   const [isProcessingExcel, setIsProcessingExcel] = useState(false);
   const [updatedWorkbook, setUpdatedWorkbook] = useState<XLSX.WorkBook | null>(null);
   const [canDownloadExcel, setCanDownloadExcel] = useState(false);
+  const [showPrvAlert, setShowPrvAlert] = useState(false);
 
   useEffect(() => {
     if (!selectedQuote) {
@@ -60,6 +70,10 @@ export default function Controle() {
   };
 
   const handleConfigChange = (updates: Partial<typeof config>) => {
+    // Verificar se PRV foi alterado e se é diferente de 30
+    if (updates.prv && updates.prv !== 30) {
+      setShowPrvAlert(true);
+    }
     updateQuoteConfig(selectedQuote.id, updates);
     toast.success('Configuração atualizada');
   };
@@ -454,6 +468,20 @@ export default function Controle() {
         </div>
       </Card>
 
+      {/* Alert Dialog para PRV diferente de 30 */}
+      <AlertDialog open={showPrvAlert} onOpenChange={setShowPrvAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Aviso</AlertDialogTitle>
+            <AlertDialogDescription>
+              PRV diferente de 30 requer aprovação do CDG
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
