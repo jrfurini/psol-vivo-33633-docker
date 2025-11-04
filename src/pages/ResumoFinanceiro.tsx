@@ -18,7 +18,7 @@ const COEFICIENTES: Record<number, number> = {
 
 export default function ResumoFinanceiro() {
   const navigate = useNavigate();
-  const { selectedQuote, quoteProducts, rateioServices, quoteConfigs } = useApp();
+  const { selectedQuote, quoteProducts, rateioServices, quoteConfigs, adminSettings } = useApp();
 
   const [receitaBruta, setReceitaBruta] = useState(0);
   const [impostos, setImpostos] = useState(0);
@@ -34,6 +34,7 @@ export default function ResumoFinanceiro() {
   const [lucroLiquido, setLucroLiquido] = useState(0);
   const [margemLiquida, setMargemLiquida] = useState(0);
   const [vpl, setVpl] = useState(0);
+  const [alcada, setAlcada] = useState('');
 
   useEffect(() => {
     if (!selectedQuote) {
@@ -107,7 +108,20 @@ export default function ResumoFinanceiro() {
     const vplCalc = lucroLiquidoCalc / coeficiente;
     setVpl(vplCalc);
 
-  }, [selectedQuote, quoteProducts, rateioServices, quoteConfigs]);
+    // Alçada de aprovação baseada na margem líquida
+    const alcadas = adminSettings.alcadas;
+    let alcadaCalc = '';
+    
+    if (margemLiquidaCalc >= alcadas.preVendas) {
+      alcadaCalc = 'Pré Vendas';
+    } else if (margemLiquidaCalc >= alcadas.diretor) {
+      alcadaCalc = 'Diretor';
+    } else {
+      alcadaCalc = 'CDG';
+    }
+    setAlcada(alcadaCalc);
+
+  }, [selectedQuote, quoteProducts, rateioServices, quoteConfigs, adminSettings]);
 
   if (!selectedQuote) {
     return null;
@@ -270,18 +284,18 @@ export default function ResumoFinanceiro() {
         </Card>
       </div>
 
-      {/* Margem EBITDA */}
+      {/* Alçada de Aprovação */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">Indicadores Percentuais</h2>
+        <h2 className="text-lg font-semibold mb-4">Alçada de Aprovação</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label htmlFor="margemEbitda">Margem EBITDA</Label>
+            <Label htmlFor="alcada">Alçada de Aprovação</Label>
             <Input
-              id="margemEbitda"
+              id="alcada"
               type="text"
-              value={`${margemEbitda.toFixed(1)}%`}
-              placeholder="0,0%"
-              className="mt-2 bg-muted"
+              value={alcada}
+              placeholder="Não definida"
+              className="mt-2 bg-muted font-semibold"
               readOnly
             />
           </div>
