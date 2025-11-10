@@ -1,0 +1,17 @@
+# Dockerfile para desenvolvimento
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package.json package-lock.json* ./
+
+# Instalar dependências
+RUN npm ci
+
+# Expor porta 8080 (conforme configurado no vite.config.ts)
+EXPOSE 8080
+
+# Comando para iniciar servidor de desenvolvimento
+CMD ["npm", "run", "dev", "--", "--host"]
+
