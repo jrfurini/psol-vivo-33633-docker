@@ -1,5 +1,13 @@
-import { FileText, Package, Users, Settings, DollarSign, Calculator } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import {
+  FileText,
+  Package,
+  Users,
+  Settings,
+  DollarSign,
+  Calculator,
+} from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { LogoVivo } from "@/components/LogoVivo";
 import {
   Sidebar,
   SidebarContent,
@@ -10,15 +18,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 
 const menuItems = [
-  { title: 'Controle', url: '/controle', icon: FileText },
-  { title: 'Máscara do Fornecedor', url: '/mascara-fornecedor', icon: Package },
-  { title: 'Rateio', url: '/rateio', icon: DollarSign },
-  { title: 'Resumo Financeiro', url: '/resumo-financeiro', icon: Calculator },
-  { title: 'Contatos', url: '/contatos', icon: Users },
-  { title: 'Administração', url: '/administracao', icon: Settings },
+  { title: "Controle", url: "/controle", icon: FileText },
+  { title: "Máscara do Fornecedor", url: "/mascara-fornecedor", icon: Package },
+  { title: "Rateio", url: "/rateio", icon: DollarSign },
+  { title: "Resumo Financeiro", url: "/resumo-financeiro", icon: Calculator },
+  { title: "Contatos", url: "/contatos", icon: Users },
+  { title: "Administração", url: "/administracao", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -28,20 +36,22 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground font-semibold">
-            Simulador Vivo
+          <SidebarGroupLabel className="h-24 text-sidebar-foreground font-semibold">
+            <div className="flex flex-col items-center gap-2 mb-4">
+              <LogoVivo className="h-14 text-white" />
+            </div>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
+                    <NavLink
                       to={item.url}
-                      className={({ isActive }) => 
-                        isActive 
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground' 
-                          : 'hover:bg-sidebar-accent/50'
+                      className={({ isActive }) =>
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <item.icon className="h-4 w-4" />
